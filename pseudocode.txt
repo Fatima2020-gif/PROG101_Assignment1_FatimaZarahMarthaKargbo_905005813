@@ -1,0 +1,82 @@
+BEGIN DrainageWatch
+    DECLARE community AS STRING
+    DECLARE blockageCode AS INTEGER
+    DECLARE standingWaterCode AS INTEGER
+    DECLARE rainfallCode AS INTEGER
+    DECLARE complaints AS INTEGER
+    DECLARE priorityScore AS INTEGER
+    DECLARE priorityLevel AS STRING
+    DECLARE action AS STRING
+    DECLARE continueAssessment AS STRING
+    SET continueAssessment = "YES"
+    WHILE continueAssessment = "YES"
+        OUTPUT "DRAINAGEWATCH SYSTEM"
+        INPUT community
+        INPUT blockageCode
+        INPUT standingWaterCode
+        INPUT rainfallCode
+        INPUT complaints
+        IF community = "" OR
+           blockageCode < 0 OR blockageCode > 2 OR
+           standingWaterCode < 0 OR standingWaterCode > 2 OR
+           rainfallCode < 0 OR rainfallCode > 2 OR
+           complaints < 0 THEN
+            OUTPUT "Invalid input. Please enter the information again."
+        ELSE
+            SET priorityScore = 0
+            IF blockageCode = 2 THEN
+                SET priorityScore = priorityScore + 4
+            ELSE
+                IF blockageCode = 1 THEN
+                    SET priorityScore = priorityScore + 2
+                END IF
+            END IF
+            IF standingWaterCode = 2 THEN
+                SET priorityScore = priorityScore + 3
+            ELSE
+                IF standingWaterCode = 1 THEN
+                    SET priorityScore = priorityScore + 1
+                END IF
+            END IF
+            IF rainfallCode = 2 THEN
+                SET priorityScore = priorityScore + 2
+            ELSE
+                IF rainfallCode = 1 THEN
+                    SET priorityScore = priorityScore + 1
+                END IF
+            END IF
+            IF complaints >= 5 THEN
+                SET priorityScore = priorityScore + 2
+            ELSE
+                IF complaints >= 3 THEN
+                    SET priorityScore = priorityScore + 1
+                END IF
+            END IF
+            IF priorityScore >= 9 THEN
+                SET priorityLevel = "URGENT"
+                SET action = "Notify the responsible local team and inspect the site as soon as safely possible."
+            ELSE
+                IF priorityScore >= 6 THEN
+                    SET priorityLevel = "HIGH"
+                    SET action = "Arrange a priority inspection and plan maintenance."
+                ELSE
+                    IF priorityScore >= 3 THEN
+                        SET priorityLevel = "MEDIUM"
+                        SET action = "Schedule a drainage inspection and monitor the location."
+                    ELSE
+                        SET priorityLevel = "LOW"
+                        SET action = "Continue routine drainage maintenance."
+                    END IF
+                END IF
+            END IF
+            OUTPUT "Community: " + community
+            OUTPUT "Maintenance Priority Score: " + priorityScore
+            OUTPUT "Priority Level: " + priorityLevel
+            OUTPUT "Recommended Action: " + action
+        END IF
+        OUTPUT "Assess another community? Enter YES or NO."
+        INPUT continueAssessment
+        SET continueAssessment = UPPERCASE(continueAssessment)
+    END WHILE
+    OUTPUT "DrainageWatch assessment has ended."
+END DrainageWatch
